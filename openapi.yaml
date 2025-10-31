@@ -1,0 +1,1512 @@
+openapi: 3.0.0
+info:
+  title: Mailrify Rest API
+  description: Mailrify.com Rest API specification.
+  termsOfService: https://mailrify.com/terms
+  contact:
+    name: Mailrify.com
+    url: https://mailrify.com
+  version: 1.0.0
+servers:
+- url: https://app.mailrify.com/api
+paths:
+  /v1/domains:
+    get:
+      tags:
+      - Domains
+      description: List domains
+      operationId: listDomains
+      responses:
+        "200":
+          description: Retrieve domains accessible by the API key
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Domain"
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Domains
+      description: Create domain
+      operationId: createDomain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDomainRequest"
+        required: true
+      responses:
+        "200":
+          description: Create a new domain
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateDomainResponse"
+      security:
+      - Bearer: []
+  /v1/domains/{id}:
+    get:
+      tags:
+      - Domains
+      description: Get domain
+      operationId: getDomain
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+          nullable: true
+          example: 1
+      responses:
+        "200":
+          description: Retrieve the domain
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Domain"
+      security:
+      - Bearer: []
+    delete:
+      tags:
+      - Domains
+      description: Delete domain
+      operationId: deleteDomain
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+          nullable: true
+          example: 1
+      responses:
+        "200":
+          description: Domain deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteDomainResponse"
+        "403":
+          description: Forbidden - API key doesn't have access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Domain not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+      - Bearer: []
+  /v1/domains/{id}/verify:
+    put:
+      tags:
+      - Domains
+      description: Verify domain
+      operationId: verifyDomain
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+          nullable: true
+          example: 1
+      responses:
+        "200":
+          description: Verify domain
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyDomainResponse"
+        "403":
+          description: Forbidden - API key doesn't have access to this domain
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Domain not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+      - Bearer: []
+  /v1/emails/{emailId}:
+    get:
+      tags:
+      - Emails
+      description: Get Email
+      operationId: getEmail
+      parameters:
+      - name: emailId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 3
+          type: string
+          example: cuiwqdj74rygf74
+      responses:
+        "200":
+          description: Retrieve the email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Email"
+      security:
+      - Bearer: []
+    patch:
+      tags:
+      - Emails
+      description: Update schedule
+      operationId: updateSchedule
+      parameters:
+      - name: emailId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 3
+          type: string
+          example: cuiwqdj74rygf74
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateScheduleRequest"
+        required: true
+      responses:
+        "200":
+          description: Updated schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateScheduleResponse"
+      security:
+      - Bearer: []
+  /v1/emails:
+    get:
+      tags:
+      - Emails
+      description: List emails
+      operationId: listEmails
+      parameters:
+      - name: page
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "1"
+          default: "1"
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "50"
+          default: "50"
+      - name: startDate
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-01-01T00:00:00Z
+      - name: endDate
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-01-31T23:59:59Z
+      - name: domainId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: "#/components/schemas/domainId"
+      responses:
+        "200":
+          description: Retrieve a list of emails
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListEmailsResponse"
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Emails
+      description: Send email
+      operationId: sendEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendEmailRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully created email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendEmailResponse"
+      security:
+      - Bearer: []
+  /v1/emails/batch:
+    post:
+      tags:
+      - Emails
+      description: Batch email
+      operationId: batchEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchEmailRequest"
+        required: true
+      responses:
+        "200":
+          description: List of successfully created email IDs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchEmailResponse"
+      security:
+      - Bearer: []
+  /v1/emails/{emailId}/cancel:
+    post:
+      tags:
+      - Emails
+      description: Cancel schedule
+      operationId: cancelSchedule
+      parameters:
+      - name: emailId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 3
+          type: string
+          example: cuiwqdj74rygf74
+      responses:
+        "200":
+          description: Canceled email ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelScheduleResponse"
+      security:
+      - Bearer: []
+  /v1/contactBooks/{contactBookId}/contacts:
+    get:
+      tags:
+      - Contacts
+      description: Get contacts
+      operationId: getContacts
+      parameters:
+      - name: contactBookId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      - name: emails
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+      - name: ids
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Retrieve multiple contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+      security:
+      - Bearer: []
+    post:
+      tags:
+      - Contacts
+      description: Create contact
+      operationId: createContact
+      parameters:
+      - name: contactBookId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 3
+          type: string
+          example: cuiwqdj74rygf74
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContactRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully created contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateContactResponse"
+      security:
+      - Bearer: []
+  /v1/contactBooks/{contactBookId}/contacts/{contactId}:
+    get:
+      tags:
+      - Contacts
+      description: Get contact
+      operationId: getContact
+      parameters:
+      - name: contactBookId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      - name: contactId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      responses:
+        "200":
+          description: Retrieve the contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+      security:
+      - Bearer: []
+    put:
+      tags:
+      - Contacts
+      description: Upsert contact
+      operationId: upsertContact
+      parameters:
+      - name: contactBookId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 3
+          type: string
+          example: cuiwqdj74rygf74
+      - name: contactId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertContactRequest"
+        required: true
+      responses:
+        "200":
+          description: Contact upserted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpsertContactResponse"
+      security:
+      - Bearer: []
+    delete:
+      tags:
+      - Contacts
+      description: Delete contact
+      operationId: deleteContact
+      parameters:
+      - name: contactBookId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      - name: contactId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      responses:
+        "200":
+          description: Contact deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteContactResponse"
+      security:
+      - Bearer: []
+    patch:
+      tags:
+      - Contacts
+      description: Update contact
+      operationId: updateContact
+      parameters:
+      - name: contactBookId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      - name: contactId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: cuiwqdj74rygf74
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContactRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully updated contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateContactResponse"
+      security:
+      - Bearer: []
+  /v1/campaigns:
+    post:
+      tags:
+      - Campaigns
+      description: Create campaign
+      operationId: createCampaign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignRequest"
+        required: true
+      responses:
+        "200":
+          description: Create a campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+      security:
+      - Bearer: []
+  /v1/campaigns/{campaignId}:
+    get:
+      tags:
+      - Campaigns
+      description: Get campaign
+      operationId: getCampaign
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 1
+          type: string
+          example: cmp_123
+      responses:
+        "200":
+          description: Get campaign details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+      security:
+      - Bearer: []
+  /v1/campaigns/{campaignId}/schedule:
+    post:
+      tags:
+      - Campaigns
+      description: Schedule campaign
+      operationId: scheduleCampaign
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 1
+          type: string
+          example: cmp_123
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleCampaignRequest"
+        required: true
+      responses:
+        "200":
+          description: Schedule a campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduleCampaignResponse"
+      security:
+      - Bearer: []
+  /v1/campaigns/{campaignId}/pause:
+    post:
+      tags:
+      - Campaigns
+      description: Pause campaign
+      operationId: pauseCampaign
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 1
+          type: string
+          example: cmp_123
+      responses:
+        "200":
+          description: Pause a campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+      security:
+      - Bearer: []
+  /v1/campaigns/{campaignId}/resume:
+    post:
+      tags:
+      - Campaigns
+      description: Resume campaign
+      operationId: resumeCampaign
+      parameters:
+      - name: campaignId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          minLength: 1
+          type: string
+          example: cmp_123
+      responses:
+        "200":
+          description: Resume a campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+      security:
+      - Bearer: []
+components:
+  schemas:
+    DomainDnsRecord:
+      required:
+      - name
+      - status
+      - ttl
+      - type
+      - value
+      type: object
+      properties:
+        type:
+          type: string
+          description: DNS record type
+          example: TXT
+          enum:
+          - MX
+          - TXT
+        name:
+          type: string
+          description: DNS record name
+          example: mail
+        value:
+          type: string
+          description: DNS record value
+          example: v=spf1 include:amazonses.com ~all
+        ttl:
+          type: string
+          description: DNS record TTL
+          example: Auto
+        priority:
+          type: string
+          description: DNS record priority
+          nullable: true
+          example: "10"
+        status:
+          type: string
+          enum:
+          - NOT_STARTED
+          - PENDING
+          - SUCCESS
+          - FAILED
+          - TEMPORARY_FAILURE
+        recommended:
+          type: boolean
+          description: Whether the record is recommended
+    Domain:
+      required:
+      - createdAt
+      - dnsRecords
+      - id
+      - name
+      - publicKey
+      - status
+      - teamId
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: number
+          description: The ID of the domain
+          example: 1
+        name:
+          type: string
+          description: The name of the domain
+          example: example.com
+        teamId:
+          type: number
+          description: The ID of the team
+          example: 1
+        status:
+          type: string
+          enum:
+          - NOT_STARTED
+          - PENDING
+          - SUCCESS
+          - FAILED
+          - TEMPORARY_FAILURE
+        region:
+          type: string
+          default: us-east-1
+        clickTracking:
+          type: boolean
+          default: false
+        openTracking:
+          type: boolean
+          default: false
+        publicKey:
+          type: string
+        dkimStatus:
+          type: string
+          nullable: true
+        spfDetails:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        dmarcAdded:
+          type: boolean
+          default: false
+        isVerifying:
+          type: boolean
+          default: false
+        errorMessage:
+          type: string
+          nullable: true
+        subdomain:
+          type: string
+          nullable: true
+        verificationError:
+          type: string
+          nullable: true
+        lastCheckedTime:
+          type: string
+          nullable: true
+        dnsRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/DomainDnsRecord"
+    CreateDomainRequest:
+      required:
+      - name
+      - region
+      type: object
+      properties:
+        name:
+          type: string
+        region:
+          type: string
+    CreateDomainResponse:
+      allOf:
+      - $ref: "#/components/schemas/Domain"
+    VerifyDomainResponse:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+    ErrorResponse:
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          type: string
+    DeleteDomainResponse:
+      required:
+      - id
+      - message
+      - success
+      type: object
+      properties:
+        id:
+          type: number
+        success:
+          type: boolean
+        message:
+          type: string
+    EmailEvent:
+      required:
+      - createdAt
+      - emailId
+      - status
+      type: object
+      properties:
+        emailId:
+          type: string
+        status:
+          type: string
+          enum:
+          - SCHEDULED
+          - QUEUED
+          - SENT
+          - DELIVERY_DELAYED
+          - BOUNCED
+          - REJECTED
+          - RENDERING_FAILURE
+          - DELIVERED
+          - OPENED
+          - CLICKED
+          - COMPLAINED
+          - FAILED
+          - CANCELLED
+          - SUPPRESSED
+        createdAt:
+          type: string
+        data:
+          nullable: true
+    Email:
+      required:
+      - createdAt
+      - emailEvents
+      - from
+      - html
+      - id
+      - subject
+      - teamId
+      - text
+      - to
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+        teamId:
+          type: number
+        to:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        replyTo:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        cc:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        bcc:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        from:
+          type: string
+        subject:
+          type: string
+        html:
+          type: string
+          nullable: true
+        text:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        emailEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmailEvent"
+    UpdateScheduleRequest:
+      required:
+      - scheduledAt
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          format: date-time
+    UpdateScheduleResponse:
+      type: object
+      properties:
+        emailId:
+          type: string
+    ListEmailsResponse:
+      required:
+      - count
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ListEmailsResponse_data"
+        count:
+          type: number
+    SendEmailAttachment:
+      required:
+      - content
+      - filename
+      type: object
+      properties:
+        filename:
+          minLength: 1
+          type: string
+        content:
+          minLength: 1
+          type: string
+    SendEmailRequest:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        to:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        from:
+          type: string
+        subject:
+          minLength: 1
+          type: string
+          description: Optional when templateId is provided
+        templateId:
+          type: string
+          description: ID of a template from the dashboard
+        variables:
+          type: object
+          additionalProperties:
+            type: string
+        replyTo:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        cc:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        bcc:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        text:
+          minLength: 1
+          type: string
+          nullable: true
+        html:
+          minLength: 1
+          type: string
+          nullable: true
+        headers:
+          type: object
+          additionalProperties:
+            minLength: 1
+            type: string
+          description: Custom headers to included with the emails
+        attachments:
+          maxItems: 10
+          type: array
+          items:
+            $ref: "#/components/schemas/SendEmailAttachment"
+        scheduledAt:
+          type: string
+          format: date-time
+        inReplyToId:
+          type: string
+          nullable: true
+    SendEmailResponse:
+      type: object
+      properties:
+        emailId:
+          type: string
+    BatchEmailRequestItem:
+      required:
+      - from
+      - to
+      type: object
+      properties:
+        to:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        from:
+          type: string
+        subject:
+          minLength: 1
+          type: string
+          description: Optional when templateId is provided
+        templateId:
+          type: string
+          description: ID of a template from the dashboard
+        variables:
+          type: object
+          additionalProperties:
+            type: string
+        replyTo:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        cc:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        bcc:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        text:
+          minLength: 1
+          type: string
+          nullable: true
+        html:
+          minLength: 1
+          type: string
+          nullable: true
+        headers:
+          type: object
+          additionalProperties:
+            minLength: 1
+            type: string
+          description: Custom headers to included with the emails
+        attachments:
+          maxItems: 10
+          type: array
+          items:
+            $ref: "#/components/schemas/SendEmailAttachment"
+        scheduledAt:
+          type: string
+          format: date-time
+        inReplyToId:
+          type: string
+          nullable: true
+    BatchEmailRequest:
+      maxItems: 100
+      type: array
+      items:
+        $ref: "#/components/schemas/BatchEmailRequestItem"
+    BatchEmailResponseItem:
+      required:
+      - emailId
+      type: object
+      properties:
+        emailId:
+          type: string
+    BatchEmailResponse:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchEmailResponseItem"
+    CancelScheduleResponse:
+      type: object
+      properties:
+        emailId:
+          type: string
+    CreateContactRequest:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        subscribed:
+          type: boolean
+    CreateContactResponse:
+      type: object
+      properties:
+        contactId:
+          type: string
+    Contact:
+      required:
+      - contactBookId
+      - createdAt
+      - email
+      - id
+      - properties
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        email:
+          type: string
+        subscribed:
+          type: boolean
+          default: true
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        contactBookId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    UpdateContactRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        subscribed:
+          type: boolean
+    UpdateContactResponse:
+      type: object
+      properties:
+        contactId:
+          type: string
+    UpsertContactRequest:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: string
+        subscribed:
+          type: boolean
+    UpsertContactResponse:
+      required:
+      - contactId
+      type: object
+      properties:
+        contactId:
+          type: string
+    DeleteContactResponse:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+    CreateCampaignRequest:
+      required:
+      - contactBookId
+      - from
+      - name
+      - subject
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+        from:
+          minLength: 1
+          type: string
+        subject:
+          minLength: 1
+          type: string
+        previewText:
+          type: string
+        contactBookId:
+          minLength: 1
+          type: string
+        content:
+          minLength: 1
+          type: string
+        html:
+          minLength: 1
+          type: string
+        replyTo:
+          anyOf:
+          - minLength: 1
+            type: string
+          - type: array
+            items:
+              minLength: 1
+              type: string
+        cc:
+          anyOf:
+          - minLength: 1
+            type: string
+          - type: array
+            items:
+              minLength: 1
+              type: string
+        bcc:
+          anyOf:
+          - minLength: 1
+            type: string
+          - type: array
+            items:
+              minLength: 1
+              type: string
+        sendNow:
+          type: boolean
+        scheduledAt:
+          type: string
+          description: "Timestamp in ISO 8601 format or natural language (e.g., 'tomorrow\
+            \ 9am', 'next monday 10:30')"
+        batchSize:
+          maximum: 100000
+          minimum: 1
+          type: integer
+    Campaign:
+      required:
+      - batchSize
+      - batchWindowMinutes
+      - bcc
+      - bounced
+      - cc
+      - clicked
+      - complained
+      - contactBookId
+      - content
+      - createdAt
+      - delivered
+      - from
+      - hardBounced
+      - html
+      - id
+      - name
+      - opened
+      - previewText
+      - replyTo
+      - scheduledAt
+      - sent
+      - status
+      - subject
+      - total
+      - unsubscribed
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        from:
+          type: string
+        subject:
+          type: string
+        previewText:
+          type: string
+          nullable: true
+        contactBookId:
+          type: string
+          nullable: true
+        html:
+          type: string
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        status:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+          nullable: true
+        batchSize:
+          type: integer
+        batchWindowMinutes:
+          type: integer
+        total:
+          type: integer
+        sent:
+          type: integer
+        delivered:
+          type: integer
+        opened:
+          type: integer
+        clicked:
+          type: integer
+        unsubscribed:
+          type: integer
+        bounced:
+          type: integer
+        hardBounced:
+          type: integer
+        complained:
+          type: integer
+        replyTo:
+          type: array
+          items:
+            type: string
+        cc:
+          type: array
+          items:
+            type: string
+        bcc:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ScheduleCampaignRequest:
+      type: object
+      properties:
+        scheduledAt:
+          type: string
+          description: "Timestamp in ISO 8601 format or natural language (e.g., 'tomorrow\
+            \ 9am', 'next monday 10:30')"
+        batchSize:
+          maximum: 100000
+          minimum: 1
+          type: integer
+    ScheduleCampaignResponse:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+    SuccessResponse:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+    domainId:
+      example: "123"
+      anyOf:
+      - type: string
+      - type: array
+        items:
+          type: string
+    ListEmailsResponse_data:
+      required:
+      - createdAt
+      - domainId
+      - from
+      - html
+      - id
+      - latestStatus
+      - scheduledAt
+      - subject
+      - text
+      - to
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+        to:
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        replyTo:
+          nullable: true
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        cc:
+          nullable: true
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        bcc:
+          nullable: true
+          anyOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        from:
+          type: string
+        subject:
+          type: string
+        html:
+          type: string
+          nullable: true
+        text:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        latestStatus:
+          type: string
+          nullable: true
+          enum:
+          - SCHEDULED
+          - QUEUED
+          - SENT
+          - DELIVERY_DELAYED
+          - BOUNCED
+          - REJECTED
+          - RENDERING_FAILURE
+          - DELIVERED
+          - OPENED
+          - CLICKED
+          - COMPLAINED
+          - FAILED
+          - CANCELLED
+          - SUPPRESSED
+        scheduledAt:
+          type: string
+          format: date-time
+          nullable: true
+        domainId:
+          type: number
+          nullable: true
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
